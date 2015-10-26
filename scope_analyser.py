@@ -1,10 +1,35 @@
 __author__ = 'Kaike'
 
-class ananlyser():
+NEW_BLOCK_RULE = 30
+END_BLOCK_RULE = 10
+IDD_RULE = 29
+IDU_RULE = 28
+
+class analyser():
     def __init__(self):
         self.currentLevel = -1
         self.SymbolTable = []
         self.SymbolTableLast = []
+
+    def analize(self, action, token, secundaryToken):
+        if action == NEW_BLOCK_RULE:
+            self.new_block()
+
+        if action == END_BLOCK_RULE:
+            self.end_block()
+
+        if action == IDD_RULE:
+            if self.search_in_current_scope(secundaryToken) is not None:
+                print("Scope Error. Id already exists")
+            else:
+                self.define(token)
+
+        if action == IDU_RULE:
+            if self.find_by_name(secundaryToken) is None:
+                print("Scope Error. Id does not exists")
+                self.define(token)
+
+
 
     def new_block(self):
         self.SymbolTable[++self.currentLevel] = None
@@ -27,7 +52,7 @@ class ananlyser():
 
         return newObj
 
-    def search_in_current_level(self, name):
+    def search_in_current_scope(self, name):
         newObj = self.SymbolTable[self.currentLevel];
         while newObj is not None:
             if newObj.name == name:
